@@ -1,0 +1,5 @@
+// Add this entry to ~/.config/omarchy/extensions/omarchy-menu.jsonc
+// (inside the top-level {} braces, next to the other trigger.toggle.* rows).
+// It shows up under the launcher's Toggle submenu as "Float New Windows".
+
+"trigger.toggle.float-new-windows": {"icon":"󰖲","label":"Float New Windows","checked":"omarchy-hyprland-toggle-enabled float-new-windows","action":"omarchy-hyprland-window-float-new-toggle"},

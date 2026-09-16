@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# omarchy:summary=Toggle floating windows by default for every newly opened window.
+
+FLAG_FILE="$HOME/.local/state/omarchy/toggles/hypr/float-new-windows.lua"
+
+if [[ -f $FLAG_FILE ]]; then
+  rm -f "$FLAG_FILE"
+  STATE=off
+else
+  mkdir -p "$(dirname "$FLAG_FILE")"
+  cat >"$FLAG_FILE" <<'LUA'
+-- Float every newly opened window instead of tiling it.
+o.window(".*", { float = true })
+LUA
+  STATE=on
+fi
+
+hyprctl reload >/dev/null
+omarchy-notification-send -g 󰖲 "Float new windows: $STATE"
