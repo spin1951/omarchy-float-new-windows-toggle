@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "spin1951.float-new-windows",
+  "name": "Float New Windows",
+  "version": "1.0.0",
+  "author": "Martin Bralić",
+  "license": "MIT",
+  "description": "Bar toggle: float every newly opened window instead of tiling it.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Float New Windows",
+    "description": "Click to toggle whether new windows open floating or tiled.",
+    "category": "Window Management",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  },
+  "repository": "https://github.com/spin1951/omarchy-float-new-windows-toggle"
+}
