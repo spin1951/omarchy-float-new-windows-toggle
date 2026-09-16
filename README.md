@@ -9,8 +9,11 @@ always agree:
 
 1. **Launcher menu toggle** — a row under **Toggle -> Float New Windows**
    in the Omarchy launcher.
-2. **Bar widget** — a clickable icon in the status bar that shows the
-   current state and toggles it on click.
+2. **Bar widget** — a clickable icon in the status bar. Left click toggles
+   the setting for *new* windows, same as the menu row. Right click is a
+   separate, one-shot action: it flips the floating state of every window
+   already open on the current workspace, without touching the setting
+   itself.
 
 Install either one, or both.
 

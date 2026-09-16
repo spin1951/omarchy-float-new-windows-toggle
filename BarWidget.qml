@@ -11,6 +11,11 @@ import qs.Ui
 // The toggle logic is inlined (not shelling out to the CLI script) so this
 // widget works even if only the plugin — not the separate install.sh — was
 // installed.
+//
+// Left click only ever affects *new* windows (the persistent setting).
+// Right click is a separate, one-shot action: it flips the floating state
+// of every window already open on the current workspace, and leaves the
+// persistent setting untouched.
 BarWidget {
   id: root
   moduleName: "spin1951.float-new-windows"
@@ -50,8 +55,34 @@ BarWidget {
     "]
   }
 
+  // hl.dsp.window.float (Hyprland's Lua dispatcher, default action "toggle")
+  // is tried first; togglefloating is the pre-Lua fallback for older
+  // Hyprland builds. Built through printf into a variable rather than
+  // interpolated straight into the dispatch argument, so the address never
+  // has to sit inside nested double quotes.
+  Process {
+    id: toggleWorkspaceProc
+    command: ["bash", "-c", "\
+      set -e; \
+      ws=$(hyprctl activeworkspace -j | jq -r '.id'); \
+      count=0; \
+      while IFS= read -r addr; do \
+        [[ -n $addr ]] || continue; \
+        lua_call=$(printf 'hl.dsp.window.float({ window = \"address:%s\" })' \"$addr\"); \
+        hyprctl dispatch \"$lua_call\" >/dev/null 2>&1 || \
+          hyprctl dispatch togglefloating \"address:$addr\" >/dev/null 2>&1; \
+        count=$((count+1)); \
+      done < <(hyprctl clients -j | jq -r --argjson ws \"$ws\" '.[] | select(.workspace.id == $ws) | .address'); \
+      omarchy-notification-send -g 󰖲 \"Toggled floating for $count window(s) in this workspace\" \
+    "]
+  }
+
   function toggle() {
     if (!toggleProc.running) toggleProc.running = true
+  }
+
+  function toggleExistingInWorkspace() {
+    if (!toggleWorkspaceProc.running) toggleWorkspaceProc.running = true
   }
 
   WidgetButton {
@@ -60,9 +91,11 @@ BarWidget {
     text: "󰖲"
     useActiveColor: false
     dimmed: !root.active
-    tooltipText: root.active
-      ? "Float new windows: ON — click to disable"
-      : "Float new windows: OFF — click to enable"
-    onPressed: root.toggle()
+    tooltipText: (root.active ? "New windows float — click to disable" : "New windows tile — click to enable")
+      + "\nRight click: toggle floating for windows already open here"
+    onPressed: function(mouseButton) {
+      if (mouseButton === Qt.RightButton) root.toggleExistingInWorkspace()
+      else if (mouseButton === Qt.LeftButton) root.toggle()
+    }
   }
 }
