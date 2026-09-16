@@ -58,7 +58,8 @@ BarWidget {
     id: button
     bar: root.bar
     text: "󰖲"
-    active: root.active
+    useActiveColor: false
+    dimmed: !root.active
     tooltipText: root.active
       ? "Float new windows: ON — click to disable"
       : "Float new windows: OFF — click to enable"
